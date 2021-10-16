@@ -19,6 +19,7 @@ interface ClickButtonProps {
 
 interface ClickButtonState {
   count: number;
+  message: string;
 }
 
 class ClickButton extends React.Component<ClickButtonProps, ClickButtonState> {
@@ -28,19 +29,25 @@ class ClickButton extends React.Component<ClickButtonProps, ClickButtonState> {
 
   state = {
     count: 0,
+    message: 'Loading...'
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.unsubscribeCounter = this.counter.onSnapshot(doc => {
       const data = doc.data();
+      this.setMessage('');
       if (!data) {
         this.counter.set({});
       } else {
-        this.setState(state => ({
-          count: data.value
-        }));
+        this.setCount(data.value);
       }
     });
+
+    try {
+      await this.counter.get();
+    } catch (e) {
+      this.setMessage('Today\'s clicking limit has been reached, come back tomorrow!')
+    }
   }
 
   componentWillUnmount() {
@@ -49,11 +56,23 @@ class ClickButton extends React.Component<ClickButtonProps, ClickButtonState> {
     }
   }
 
+  setCount(value: number) {
+    this.setState(state => ({
+      count: value
+    }));
+  }
+
+  setMessage(value: string) {
+    this.setState(state => ({
+      message: value
+    }));
+  }
+
   render() {  
     return (
       <div>
         <Button onClick={() => this.increment()}>
-          Clicks: {this.state.count}
+          {this.state.message ? this.state.message : `Clicks: ${this.state.count}`}
         </Button>
         <Warning>
           Limited to 20,000 clicks per day
@@ -63,9 +82,13 @@ class ClickButton extends React.Component<ClickButtonProps, ClickButtonState> {
   }
 
   async increment() {
-    await this.counter.update({
-      value: firebase.firestore.FieldValue.increment(1)
-    });
+    try {
+      await this.counter.update({
+        value: firebase.firestore.FieldValue.increment(1)
+      });
+    } catch (e) {
+      this.setMessage('Today\'s clicking limit has been reached, come back tomorrow!')
+    }
   };
 
 }
