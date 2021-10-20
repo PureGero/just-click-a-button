@@ -1,4 +1,3 @@
-import React from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components';
 import AppLogo from './AppLogo';
@@ -19,21 +18,15 @@ const AppHeader = styled.header`
   color: white;
 `;
 
-interface AppProps {
-  
-}
-
-class App extends React.Component<AppProps> {
-  render() {  
-    return (
-      <AppContainer>
-        <AppHeader>
-          <AppLogo src={logo} alt="logo" />
-          <ClickButton />
-        </AppHeader>
-      </AppContainer>
-    );
-  }
+const App = () => {
+  return (
+    <AppContainer>
+      <AppHeader>
+        <AppLogo src={logo} alt="logo" />
+        <ClickButton />
+      </AppHeader>
+    </AppContainer>
+  );
 }
 
 export default App;
