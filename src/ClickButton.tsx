@@ -29,15 +29,14 @@ const ClickButton = () => {
       } else {
         setCount(data.value);
       }
-    });
-
-    (async () => {
-      try {
-        await counter.get();
-      } catch (e) {
+    }, error => {
+      console.error(error);
+      if (error.code == 'resource-exhausted') {
         setMessage('Today\'s clicking limit has been reached, come back tomorrow!');
+      } else {
+        setMessage(error.message);
       }
-    })();
+    });
 
     return unsubscribeCounter;
   }, []);
