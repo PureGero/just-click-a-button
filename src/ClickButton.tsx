@@ -14,24 +14,25 @@ const Warning = styled.div`
 `;
 
 const ClickButton = () => {
-  const db = firebase.firestore();
-  const counter = db.collection('counts').doc('counter');
-
   const [count, setCount] = useState(0);
   const [message, setMessage] = useState('Loading...');
 
+  const getCounter = () => firebase.firestore().collection('counts').doc('counter');
+
   useEffect(() => {
-    const unsubscribeCounter = counter.onSnapshot(doc => {
+    console.log(`Subscribing to ${getCounter().path}`);
+
+    const unsubscribeCounter = getCounter().onSnapshot(doc => {
       const data = doc.data();
       setMessage('');
       if (!data) {
-        counter.set({});
+        getCounter().set({});
       } else {
         setCount(data.value);
       }
     }, error => {
       console.error(error);
-      if (error.code == 'resource-exhausted') {
+      if (error.code === 'resource-exhausted') {
         setMessage('Today\'s clicking limit has been reached, come back tomorrow!');
       } else {
         setMessage(error.message);
@@ -43,7 +44,7 @@ const ClickButton = () => {
 
   const increment = async () => {
     try {
-      await counter.update({
+      await getCounter().update({
         value: firebase.firestore.FieldValue.increment(1)
       });
     } catch (e) {
