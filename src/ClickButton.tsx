@@ -40,7 +40,7 @@ const ClickButton = () => {
     })();
 
     return unsubscribeCounter;
-  });
+  }, []);
 
   const increment = async () => {
     try {
