@@ -55,6 +55,9 @@ const ClickButton = () => {
 
   return (
     <div>
+      <p>Anyone can incremement the button, forever, thanks to the free teir of Firebase</p>
+      <p>How high can we get the button to go?</p>
+      <p>This is a demo project testing React and Firestore</p>
       <Button onClick={() => increment()}>
         {message ? message : `Clicks: ${count}`}
       </Button>
